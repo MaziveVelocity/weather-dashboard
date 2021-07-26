@@ -1,0 +1,107 @@
+/* main elements */
+* {
+    margin: 0;
+    padding: 0;
+    font-family: 'Karla', sans-serif;
+    letter-spacing: -1px;
+}
+
+li{
+    list-style: none;
+}
+
+ul{
+    padding: 0;
+}
+
+img{
+    background-color: #050580;
+    border-radius: 180px;
+    padding: 0;
+    margin: 5;
+}
+
+span{
+    margin: 0 5px;
+}
+
+section{
+    height: 15%;
+}
+
+.form-group{
+    height: 100%;
+}
+
+/* classes */
+.row{
+    margin: 30px;
+}
+
+/* title area */
+#title{
+    background-image: linear-gradient(to right, #3538fd, #1c1e94);
+}
+
+#title h1{
+    text-align: center;
+    color: white;
+}
+
+/* input section */
+#input-section {
+    width: 30%;
+}
+
+#city-input{
+    resize: none;
+    overflow: hidden;
+}
+
+#submit-button {
+    margin: 15px 0;
+    width: 100%;
+}
+
+/* main data section */
+#weather-data #uv-data{
+    color: white;
+    border-radius: 10px;
+    padding: 0.2em 1em;
+    margin: 0 5px ;
+}
+
+/* city list section */
+#city-list-con {
+    width: 30%;
+}
+
+#city-list{
+    padding: 0;
+    margin: 0;
+}
+
+#city-list-con ul li{
+    text-align: center;
+    padding: 5px;
+    margin: 15px 0;
+    background-color: gray;
+    color: white;
+    border-radius: 15px;
+}
+
+#city-list-con ul li:hover{
+    background-color: #b1b1b1;
+    cursor: pointer;
+}
+
+/* card section */
+.card-body{
+    padding: 5px 0;
+}
+
+.card{
+    background-color: #252568;
+    color: white;
+    margin: 5px 10px;
+}
