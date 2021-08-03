@@ -29,14 +29,16 @@ section{
     height: 15%;
 }
 
-.form-group{
-    height: 100%;
-}
 
 /* classes */
 .row{
     margin: 30px;
 }
+
+.form-group{
+    height: 100%;
+}
+
 
 /* title area */
 #title{

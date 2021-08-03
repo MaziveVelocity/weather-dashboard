@@ -42,7 +42,6 @@ var weeklyForcast = [];
 
 // city array to be stored
 var cities = JSON.parse(localStorage.getItem("data")) || [];
-console.log(cities);
 
 // displays 5day forcast using cards
 function displayCard(arry){
@@ -102,13 +101,16 @@ function displayCurrent(date, icon, temp, wind, humidity, uv){
 }
 
 function addCity(name){
-    if(cities.length >= 10){
-        cities.pop();
-        cities.splice(0,0,{name: name});
-    }else{
-        cities.push({name: name});
-    }
+    if(name != "" && name != " " && name != undefined && name != null){
+        console.log("correct data");
+        if(cities.length >= 10){
+            cities.pop();
+            cities.splice(0,0,{name: name});
+        }else{
+            cities.push({name: name});
+        }
     localStorage.setItem("data", JSON.stringify(cities));
+    }
 }
 
 function saveData(){
@@ -134,88 +136,102 @@ displayCites(cities);
 submitBtnEl.on("click", function(){
     city = inputEl.val();
 
-    mainCityEl.text(city);
-    
-    addCity(city)
-    displayCites(cities);
+    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=f64913ef90b44b625b14719274c93401`)
+    .then(response => {
+        console.log(response.status);
 
-    inputEl.val("");
-
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=965dabd699e5396f5d455158279bb13e`)
-    .then(response => response.json())
+        if (response.status === 404){
+            console.log("no content");
+            alert("City name not found");
+        }else{
+            return response.json();
+        }
+    })
     .then(data => {
-    
+
+        if(city != "" && city != " " && city != undefined && city != null){
+            mainCityEl.text(city);
+        }
+
+        addCity(city)
+        displayCites(cities);
+
+        inputEl.val("");
+        
         mainData.date = date.fromSeconds(data.dt).toLocaleString();
         mainData.icon = data.weather[0].icon;
         mainData.temp = data.main.temp;
         mainData.wind = data.wind.speed;
         mainData.hum = data.main.humidity;
         
-        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=965dabd699e5396f5d455158279bb13e`)
+        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=f64913ef90b44b625b14719274c93401`)
         .then(response => response.json())
         .then(data => {
+            
+            console.log(data);
 
             mainData.uv = data.current.uvi;
-            displayCurrent(mainData.date, mainData.icon, mainData.temp, mainData.wind, mainData.hum, mainData.uv);});
-    });
-
-    fetch(`https://api.openweathermap.org/data/2.5/forecast/daily?q=${city}&cnt=${numDays}&units=imperial&appid=965dabd699e5396f5d455158279bb13e`)
-    .then(response => response.json())
-    .then(data =>{
-
-    for (var i = 0; i < numDays; i++){
-
-        weeklyForcast.push({
-            date: date.fromSeconds(data.list[i].dt).toLocaleString(),
-            icon: data.list[i].weather[0].icon,
-            temp: data.list[i].temp.max,
-            wind: data.list[i].speed,
-            hum: data.list[i].humidity
+            displayCurrent(mainData.date, mainData.icon, mainData.temp, mainData.wind, mainData.hum, mainData.uv);
+        
+            for (var i = 0; i < numDays; i++){
+                weeklyForcast.push({
+                    date: date.fromSeconds(data.daily[i].dt).toLocaleString(),
+                    icon: data.daily[i].weather[0].icon,
+                    temp: data.daily[i].temp.max,
+                    wind: data.daily[i].wind_speed,
+                    hum: data.daily[i].humidity
+                });
+            }
+            displayCard(weeklyForcast);
+            weeklyForcast = [];        
+        })
+        .catch(error => {
+            console.error("There was an issue with the fetch: ", error);
+            alert("ERROR: There was an error with getting weather data");
         });
-    }
-    displayCard(weeklyForcast);
-    weeklyForcast = [];
     });
-});
+}),
 
 // when one of the cities in the history clicked load that cities weather info
 $(cityContEl).on( "click", "li",  function(){
     city = $(this).text();
     mainCityEl.text(city);
 
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=965dabd699e5396f5d455158279bb13e`)
+fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=f64913ef90b44b625b14719274c93401`)
+.then(response => response.json())
+.then(data => {
+
+
+    mainData.date = date.fromSeconds(data.dt).toLocaleString();
+    mainData.icon = data.weather[0].icon;
+    mainData.temp = data.main.temp;
+    mainData.wind = data.wind.speed;
+    mainData.hum = data.main.humidity;
+    
+    fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=f64913ef90b44b625b14719274c93401`)
     .then(response => response.json())
     .then(data => {
-    
-        mainData.date = date.fromSeconds(data.dt).toLocaleString();
-        mainData.icon = data.weather[0].icon;
-        mainData.temp = data.main.temp;
-        mainData.wind = data.wind.speed;
-        mainData.hum = data.main.humidity;
         
-        fetch(`https://api.openweathermap.org/data/2.5/onecall?lat=${data.coord.lat}&lon=${data.coord.lon}&exclude=hourly,minutely&appid=965dabd699e5396f5d455158279bb13e`)
-        .then(response => response.json())
-        .then(data => {
+        console.log(data);
 
-            mainData.uv = data.current.uvi;
-            displayCurrent(mainData.date, mainData.icon, mainData.temp, mainData.wind, mainData.hum, mainData.uv);});
-    });
-
-    fetch(`https://api.openweathermap.org/data/2.5/forecast/daily?q=${city}&cnt=${numDays}&units=imperial&appid=965dabd699e5396f5d455158279bb13e`)
-    .then(response => response.json())
-    .then(data =>{
-
-    for (var i = 0; i < numDays; i++){
-
-        weeklyForcast.push({
-            date: date.fromSeconds(data.list[i].dt).toLocaleString(),
-            icon: data.list[i].weather[0].icon,
-            temp: data.list[i].temp.max,
-            wind: data.list[i].speed,
-            hum: data.list[i].humidity
+        mainData.uv = data.current.uvi;
+        displayCurrent(mainData.date, mainData.icon, mainData.temp, mainData.wind, mainData.hum, mainData.uv);
+    
+        for (var i = 0; i < numDays; i++){
+            weeklyForcast.push({
+                date: date.fromSeconds(data.daily[i].dt).toLocaleString(),
+                icon: data.daily[i].weather[0].icon,
+                temp: data.daily[i].temp.max,
+                wind: data.daily[i].wind_speed,
+                hum: data.daily[i].humidity
+            });
+        }
+        displayCard(weeklyForcast);
+        weeklyForcast = [];        
+        })
+        .catch(error => {
+            console.error("There was an issue with the fetch: ", error);
+            alert("ERROR: There was an error with getting weather data");
         });
-    }
-    displayCard(weeklyForcast);
-    weeklyForcast = [];
     });
-})
+});
