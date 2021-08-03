@@ -100,6 +100,7 @@ function displayCurrent(date, icon, temp, wind, humidity, uv){
     }
 }
 
+// adds city name to list and stores it
 function addCity(name){
     if(name != "" && name != " " && name != undefined && name != null){
         console.log("correct data");
